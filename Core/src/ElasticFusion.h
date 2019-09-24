@@ -254,6 +254,10 @@ class ElasticFusion
          * @param maxVal maximum depth value to render
          */
         EFUSION_API void normaliseDepth(const float & minVal, const float & maxVal);
+    
+    public:
+        //cuong
+        Eigen::Matrix4f currPose;
 
         //Here be dragons
     private:
@@ -284,7 +288,8 @@ class ElasticFusion
 
         Eigen::Vector3f rodrigues2(const Eigen::Matrix3f& matrix);
 
-        Eigen::Matrix4f currPose;
+        //cuong
+        //Eigen::Matrix4f currPose;
 
         int tick;
         const int timeDelta;

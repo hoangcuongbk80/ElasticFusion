@@ -23,6 +23,13 @@
 #include <iomanip>
 #include <fstream>
 
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/cudaimgproc.hpp>
+#include <opencv2/cudawarping.hpp>
+
+using namespace cv;
+
 std::ifstream asFile;
 std::string directory;
 Eigen::Matrix3f K;
@@ -168,7 +175,6 @@ int main(int argc, char * argv[])
                           GL_RGB,
                           GL_UNSIGNED_BYTE,
                           false, true);
-
     loadImage(firstImage, "1c.png");
 
     GPUTexture secondImage(640, 480,
@@ -244,6 +250,18 @@ int main(int argc, char * argv[])
 
     float counter = 0;
 
+    cv::Mat last_depth, last_rgb;
+    cv::Mat next_depth, next_rgb;
+
+    last_depth = cv::imread("/home/aass/Hoang-Cuong/ElasticFusion/GPUTest/1d.png", -1);
+    last_rgb = cv::imread("/home/aass/Hoang-Cuong/ElasticFusion/GPUTest/1c.png", -1);
+  
+    next_depth = cv::imread("/home/aass/Hoang-Cuong/ElasticFusion/GPUTest/2d.png", -1);
+    next_rgb = cv::imread("/home/aass/Hoang-Cuong/ElasticFusion/GPUTest/2c.png", -1);
+
+  last_depth = last_depth / 5;
+  next_depth = next_depth / 5;
+
     for(threads = 16; threads <= 512 && !pangolin::ShouldQuit(); threads += 16)
     {
         for(blocks = 16; blocks <= 512 && !pangolin::ShouldQuit(); blocks += 16)
@@ -255,7 +273,7 @@ int main(int argc, char * argv[])
 
             count = 0;
 
-            for(int i = 0; i < 5 && !pangolin::ShouldQuit(); i++)
+            for(int i = 0; i < 1 && !pangolin::ShouldQuit(); i++)
             {
                 odom.initICPModel(&vertexTexture, &normalTexture, 20.0f, currPose);
                 odom.initICP(&secondDepth, 20.0f);
@@ -276,6 +294,8 @@ int main(int argc, char * argv[])
                 GPUConfig::getInstance().so3StepBlocks = blocks;
 
                 odom.getIncrementalTransformation(trans, rot, false, 10, false, false, true);
+                std::cout << "trans: " << "\n" << trans << "\n";
+                std::cout << "rot: " << "\n" << rot << "\n";
 
                 icpStepMeanTime = (float(count) * icpStepMeanTime + (Stopwatch::getInstance().getTimings().at("icpStep") * 10)) / float(count + 1);
                 rgbStepMeanTime = (float(count) * rgbStepMeanTime + (Stopwatch::getInstance().getTimings().at("rgbStep") * 10)) / float(count + 1);
@@ -322,6 +342,7 @@ int main(int argc, char * argv[])
             display(firstImage, secondImage, counter);
         }
     }
+    
 
     std::cout << std::endl;
 

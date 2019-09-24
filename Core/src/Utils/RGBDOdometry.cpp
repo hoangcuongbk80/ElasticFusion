@@ -456,6 +456,7 @@ void RGBDOdometry::getIncrementalTransformation(Eigen::Vector3f & trans,
                                    GPUConfig::getInstance().rgbResThreads,
                                    GPUConfig::getInstance().rgbResBlocks);
                 TOCK("computeRgbResidual");
+                //std::cout << "rgbResidual: " << sigma << " " << rgbSize << "\n";
             }
 
             float sigmaVal = std::sqrt((float)sigma / rgbSize == 0 ? 1 : rgbSize);
@@ -465,6 +466,7 @@ void RGBDOdometry::getIncrementalTransformation(Eigen::Vector3f & trans,
             {
                 break;
             }
+            //std::cout << "rgbError: " << rgbError << "\n";
 
             lastRGBError = rgbError;
             lastRGBCount = rgbSize;
@@ -600,6 +602,11 @@ void RGBDOdometry::getIncrementalTransformation(Eigen::Vector3f & trans,
 
     trans = tcurr;
     rot = Rcurr;
+    //std::cout << "trans:" << "\n";
+    //std::cout << trans << "\n";
+    //std::cout << "rot:" << "\n";
+    //std::cout << rot << "\n";
+    //std::cout << "\n---------------------------------------------\n";
 }
 
 Eigen::MatrixXd RGBDOdometry::getCovariance()

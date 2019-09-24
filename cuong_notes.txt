@@ -1,0 +1,2 @@
+Run GUI with klg file:
+./ElasticFusion -l /home/aass/Hoang-Cuong/datasets/klg-ElasticFusion/liv.klg

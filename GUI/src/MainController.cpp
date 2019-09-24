@@ -26,8 +26,11 @@ MainController::MainController(int argc, char * argv[])
    logReader(0),
    framesToSkip(0),
    resetButton(false),
-   resizeStream(0)
+   resizeStream(0),
+   savePose(Eigen::Matrix4f::Identity())
 {
+    //cuong
+    
     std::string empty;
     iclnuim = Parse::get().arg(argc, argv, "-icl", empty) > -1;
 
@@ -42,7 +45,8 @@ MainController::MainController(int argc, char * argv[])
     }
     else
     {
-        Intrinsics::getInstance(528, 528, 320, 240);
+        //Intrinsics::getInstance(528, 528, 320, 240);
+        Intrinsics::getInstance(541.399048, 541.399048, 319.753235, 237.822020); //cuong 
     }
 
     Parse::get().arg(argc, argv, "-l", logFile);
@@ -50,6 +54,8 @@ MainController::MainController(int argc, char * argv[])
     if(logFile.length())
     {
         logReader = new RawLogReader(logFile, Parse::get().arg(argc, argv, "-f", empty) > -1);
+        //cuong
+        std::cout << "Running klg file \n";
     }
     else
     {
@@ -191,8 +197,10 @@ void MainController::launch()
             {
                 delete eFusion;
             }
-
-            logReader->rewind();
+            
+            //cuong
+            if(eFusion == 0) logReader->rewind();
+            //logReader->rewind();
             eFusion = new ElasticFusion(openLoop ? std::numeric_limits<int>::max() / 2 : timeDelta,
                                         icpCountThresh,
                                         icpErrThresh,
@@ -209,6 +217,8 @@ void MainController::launch()
                                         so3,
                                         frameToFrameRGB,
                                         logReader->getFile());
+            //cuong
+            eFusion->currPose = savePose;
         }
         else
         {
@@ -272,9 +282,9 @@ void MainController::run()
                     currentPose->setIdentity();
                     *currentPose = groundTruthOdometry->getTransformation(logReader->timestamp);
                 }
-
+                
                 eFusion->processFrame(logReader->rgb, logReader->depth, logReader->timestamp, currentPose, weightMultiplier);
-
+                
                 if(currentPose)
                 {
                     delete currentPose;
@@ -553,6 +563,7 @@ void MainController::run()
 
         if(resetButton)
         {
+            savePose = eFusion->currPose;
             break;
         }
 

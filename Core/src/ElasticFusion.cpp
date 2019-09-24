@@ -299,6 +299,8 @@ void ElasticFusion::processFrame(const unsigned char * rgb,
             frameToModel.initICPModel(shouldFillIn ? &fillIn.vertexTexture : indexMap.vertexTex(),
                                       shouldFillIn ? &fillIn.normalTexture : indexMap.normalTex(),
                                       maxDepthProcessed, currPose);
+            // shouldFillIn = 1
+            //std::cout << "shouldFillIn: " << shouldFillIn << "\n";
             frameToModel.initRGBModel((shouldFillIn || frameToFrameRGB) ? &fillIn.imageTexture : indexMap.imageTex());
 
             frameToModel.initICP(textures[GPUTexture::DEPTH_FILTERED], maxDepthProcessed);
@@ -322,6 +324,10 @@ void ElasticFusion::processFrame(const unsigned char * rgb,
                                                       pyramid,
                                                       fastOdom,
                                                       so3);
+
+            //std::cout << "trans: " << "\n" << trans << "\n";
+            //std::cout << "rot: " << "\n" << rot << "\n";
+            
             TOCK("odom");
 
             trackingOk = !reloc || frameToModel.lastICPError < 1e-04;

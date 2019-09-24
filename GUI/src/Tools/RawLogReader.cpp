@@ -68,6 +68,8 @@ void RawLogReader::getCore()
 {
     auto tmp = fread(&timestamp,sizeof(int64_t),1,fp);
     assert(tmp);
+    //cuong
+    //std::cout << "get core timestamp: " << timestamp << "\n";
 
     tmp = fread(&depthSize,sizeof(int32_t),1,fp);
     assert(tmp);
@@ -128,6 +130,9 @@ void RawLogReader::fastForward(int frame)
 
         auto tmp = fread(&timestamp,sizeof(int64_t),1,fp);
         assert(tmp);
+
+        //cuong
+        //std::cout << "fastforward timestamp: " << timestamp << "\n";
 
         tmp = fread(&depthSize,sizeof(int32_t),1,fp);
         assert(tmp);

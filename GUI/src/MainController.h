@@ -35,6 +35,9 @@ class MainController
 
         void launch();
 
+        //cuong
+        Eigen::Matrix4f savePose;
+
     private:
         void run();
 
